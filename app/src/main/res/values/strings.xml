@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name" translation_description="Image Classification demo app [CHAR_LIMIT=40]">My Home Catalog</string>
+    <string name="camera_error" translation_description="Error regarding camera support[CHAR_LIMIT=40]">This device doesn\'t support Camera2 API.</string>
+</resources>

@@ -1,3 +1,3 @@
 package org.tensorflow.lite.examples.classification
 
-class CustomData(var iv_icon: Int, var tv_name: String)
+class CustomData(val iv_icon: Int, val tv_name: String)

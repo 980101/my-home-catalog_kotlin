@@ -22,15 +22,10 @@ import android.hardware.Camera.PreviewCallback
 import android.widget.AdapterView
 import org.tensorflow.lite.examples.classification.tflite.Classifier
 import android.content.SharedPreferences
-import org.tensorflow.lite.examples.classification.HistoryAdapter
 import androidx.recyclerview.widget.RecyclerView
-import org.tensorflow.lite.examples.classification.CameraActivity
-import org.tensorflow.lite.examples.classification.R
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.tensorflow.lite.examples.classification.HistoryItemDecoration
 import android.text.TextUtils
 import android.content.Intent
-import org.tensorflow.lite.examples.classification.MainActivity
 import org.tensorflow.lite.examples.classification.env.ImageUtils
 import android.media.Image.Plane
 import kotlin.jvm.Synchronized
@@ -38,57 +33,17 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
-import android.hardware.camera2.params.StreamConfigurationMap
 import android.hardware.camera2.CameraAccessException
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment
-import org.tensorflow.lite.examples.classification.LegacyCameraConnectionFragment
 import androidx.annotation.UiThread
 import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
-import android.annotation.SuppressLint
-import android.util.SparseIntArray
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment.CompareSizesByArea
-import android.hardware.camera2.CameraCaptureSession.CaptureCallback
-import android.hardware.camera2.CameraCaptureSession
-import android.hardware.camera2.CaptureRequest
-import android.hardware.camera2.CaptureResult
-import android.hardware.camera2.TotalCaptureResult
-import org.tensorflow.lite.examples.classification.customview.AutoFitTextureView
-import android.hardware.camera2.CameraDevice
-import android.view.TextureView.SurfaceTextureListener
-import android.graphics.SurfaceTexture
-import android.app.Activity
 import android.app.Fragment
 import android.content.Context
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment.ErrorDialog
-import android.graphics.ImageFormat
-import android.graphics.RectF
-import android.content.DialogInterface
-import android.graphics.Bitmap
-import org.tensorflow.lite.examples.classification.env.BorderedText
-import org.tensorflow.lite.examples.classification.ClassifierActivity
-import android.util.TypedValue
-import android.graphics.Typeface
 import android.hardware.Camera
 import android.media.ImageReader
 import android.os.*
 import android.util.Size
 import android.view.*
 import android.widget.Button
-import org.tensorflow.lite.examples.classification.CustomAdapter
-import org.tensorflow.lite.examples.classification.CustomData
-import androidx.recyclerview.widget.GridLayoutManager
-import org.tensorflow.lite.examples.classification.CustomActivity
-import org.tensorflow.lite.examples.classification.SpacesItemDecoration
-import android.widget.TextView
-import org.tensorflow.lite.examples.classification.MyJson
-import com.bumptech.glide.Glide
-import org.json.JSONObject
-import org.json.JSONException
-import org.tensorflow.lite.examples.classification.ItemData
-import org.json.JSONArray
-import org.tensorflow.lite.examples.classification.FavoritesAdapter
-import org.tensorflow.lite.examples.classification.DetailActivity
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import org.tensorflow.lite.examples.classification.env.Logger
 import java.lang.Exception
 import java.util.ArrayList
@@ -121,7 +76,8 @@ abstract class CameraActivity : AppCompatActivity(), OnImageAvailableListener, P
         }
     private val mPreferences: SharedPreferences? = getSharedPreferences("file", MODE_PRIVATE);
     private var adapter: HistoryAdapter? = null
-    private var recyclerView: RecyclerView? = null
+    lateinit var recyclerView: RecyclerView
+//    private var recyclerView: RecyclerView? = null
     private var arrayList: ArrayList<String?>? = null
     private var btn_capture: Button? = null
     private var recognitionStyle: String? = null
@@ -397,13 +353,18 @@ abstract class CameraActivity : AppCompatActivity(), OnImageAvailableListener, P
     protected fun setFragment() {
         val cameraId = chooseCamera()
         val fragment: Fragment
+
+        val obj = object : CameraConnectionFragment.ConnectionCallback {
+                override fun onPreviewSizeChosen(size: Size?, rotation: Int) {
+                    previewHeight = size!!.height
+                    previewWidth = size.width
+                    onPreviewSizeChosen(size, rotation)
+                }
+        }
+
         if (useCamera2API) {
             val camera2Fragment: CameraConnectionFragment = CameraConnectionFragment.Companion.newInstance(
-                    CameraConnectionFragment.ConnectionCallback { size, rotation ->
-                        previewHeight = size!!.height
-                        previewWidth = size!!.width
-                        onPreviewSizeChosen(size, rotation)
-                    },
+                    obj,
                     this,
                     layoutId,
                     desiredPreviewFrameSize)

@@ -15,76 +15,14 @@
  */
 package org.tensorflow.lite.examples.classification
 
-import androidx.appcompat.app.AppCompatActivity
 import android.media.ImageReader.OnImageAvailableListener
-import android.hardware.Camera.PreviewCallback
-import android.widget.AdapterView
 import org.tensorflow.lite.examples.classification.tflite.Classifier
-import android.content.SharedPreferences
-import org.tensorflow.lite.examples.classification.HistoryAdapter
-import androidx.recyclerview.widget.RecyclerView
-import org.tensorflow.lite.examples.classification.CameraActivity
-import android.view.WindowManager
-import org.tensorflow.lite.examples.classification.R
-import androidx.recyclerview.widget.LinearLayoutManager
-import org.tensorflow.lite.examples.classification.HistoryItemDecoration
-import android.text.TextUtils
-import android.content.Intent
-import org.tensorflow.lite.examples.classification.MainActivity
-import org.tensorflow.lite.examples.classification.env.ImageUtils
-import android.media.Image.Plane
-import kotlin.jvm.Synchronized
-import android.content.pm.PackageManager
-import android.widget.Toast
-import android.hardware.camera2.CameraCharacteristics
-import android.hardware.camera2.CameraManager
-import android.hardware.camera2.params.StreamConfigurationMap
-import android.hardware.camera2.CameraAccessException
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment
-import org.tensorflow.lite.examples.classification.LegacyCameraConnectionFragment
-import androidx.annotation.UiThread
-import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
-import android.annotation.SuppressLint
-import android.util.SparseIntArray
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment.CompareSizesByArea
-import android.hardware.camera2.CameraCaptureSession.CaptureCallback
-import android.hardware.camera2.CameraCaptureSession
-import android.hardware.camera2.CaptureRequest
-import android.hardware.camera2.CaptureResult
-import android.hardware.camera2.TotalCaptureResult
-import org.tensorflow.lite.examples.classification.customview.AutoFitTextureView
-import android.hardware.camera2.CameraDevice
-import android.view.TextureView.SurfaceTextureListener
-import android.graphics.SurfaceTexture
-import android.app.Activity
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment.ErrorDialog
-import android.graphics.ImageFormat
-import android.graphics.RectF
-import android.content.DialogInterface
 import android.graphics.Bitmap
 import org.tensorflow.lite.examples.classification.env.BorderedText
-import org.tensorflow.lite.examples.classification.ClassifierActivity
 import android.util.TypedValue
 import android.graphics.Typeface
 import android.os.*
 import android.util.Size
-import org.tensorflow.lite.examples.classification.CustomAdapter
-import org.tensorflow.lite.examples.classification.CustomData
-import androidx.recyclerview.widget.GridLayoutManager
-import org.tensorflow.lite.examples.classification.CustomActivity
-import org.tensorflow.lite.examples.classification.SpacesItemDecoration
-import android.widget.TextView
-import org.tensorflow.lite.examples.classification.MyJson
-import com.bumptech.glide.Glide
-import org.json.JSONObject
-import org.json.JSONException
-import org.tensorflow.lite.examples.classification.ItemData
-import org.json.JSONArray
-import org.tensorflow.lite.examples.classification.FavoritesAdapter
-import org.tensorflow.lite.examples.classification.DetailActivity
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import org.tensorflow.lite.examples.classification.env.Logger
 import java.io.IOException
 
@@ -100,8 +38,12 @@ class ClassifierActivity : CameraActivity(), OnImageAvailableListener {
 
     /** Input image size of the model along y axis.  */
     private var imageSizeY = 0
+
     protected override val layoutId: Int
         protected get() = R.layout.tfe_ic_camera_connection_fragment
+
+    override val desiredPreviewFrameSize: Size
+        get() = DESIRED_PREVIEW_SIZE
 
     public override fun onPreviewSizeChosen(size: Size?, rotation: Int) {
         val textSizePx = TypedValue.applyDimension(
@@ -122,7 +64,7 @@ class ClassifierActivity : CameraActivity(), OnImageAvailableListener {
     }
 
     override fun processImage() {
-        rgbFrameBitmap!!.setPixels(rgbBytes, 0, previewWidth, 0, 0, previewWidth, previewHeight)
+        rgbFrameBitmap!!.setPixels(getRgbBytes(), 0, previewWidth, 0, 0, previewWidth, previewHeight)
         val cropSize = Math.min(previewWidth, previewHeight)
         runInBackground {
             if (classifier != null) {
@@ -174,8 +116,7 @@ class ClassifierActivity : CameraActivity(), OnImageAvailableListener {
 
     companion object {
         private val LOGGER = Logger()
-        protected val desiredPreviewFrameSize = Size(640, 480)
-            protected get() = Companion.field
+        protected val DESIRED_PREVIEW_SIZE = Size(640, 480)
         private const val TEXT_SIZE_DIP = 10f
     }
 }

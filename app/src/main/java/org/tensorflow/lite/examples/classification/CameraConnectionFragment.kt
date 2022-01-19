@@ -15,38 +15,15 @@
  */
 package org.tensorflow.lite.examples.classification
 
-import androidx.appcompat.app.AppCompatActivity
 import android.media.ImageReader.OnImageAvailableListener
-import android.hardware.Camera.PreviewCallback
-import android.widget.AdapterView
-import org.tensorflow.lite.examples.classification.tflite.Classifier
-import android.content.SharedPreferences
-import org.tensorflow.lite.examples.classification.HistoryAdapter
-import androidx.recyclerview.widget.RecyclerView
-import org.tensorflow.lite.examples.classification.CameraActivity
-import org.tensorflow.lite.examples.classification.R
-import androidx.recyclerview.widget.LinearLayoutManager
-import org.tensorflow.lite.examples.classification.HistoryItemDecoration
 import android.text.TextUtils
-import android.content.Intent
-import org.tensorflow.lite.examples.classification.MainActivity
-import org.tensorflow.lite.examples.classification.env.ImageUtils
-import android.media.Image.Plane
-import kotlin.jvm.Synchronized
-import android.content.pm.PackageManager
 import android.widget.Toast
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
-import android.hardware.camera2.params.StreamConfigurationMap
 import android.hardware.camera2.CameraAccessException
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment
-import org.tensorflow.lite.examples.classification.LegacyCameraConnectionFragment
-import androidx.annotation.UiThread
-import org.tensorflow.lite.examples.classification.tflite.Classifier.Recognition
 import android.annotation.SuppressLint
 import android.app.*
 import android.util.SparseIntArray
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment.CompareSizesByArea
 import android.hardware.camera2.CameraCaptureSession.CaptureCallback
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CaptureRequest
@@ -56,32 +33,12 @@ import org.tensorflow.lite.examples.classification.customview.AutoFitTextureView
 import android.hardware.camera2.CameraDevice
 import android.view.TextureView.SurfaceTextureListener
 import android.content.Context
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment.ErrorDialog
-import android.content.DialogInterface
 import android.content.res.Configuration
 import android.graphics.*
-import org.tensorflow.lite.examples.classification.env.BorderedText
-import org.tensorflow.lite.examples.classification.ClassifierActivity
-import android.util.TypedValue
 import android.media.ImageReader
 import android.os.*
 import android.util.Size
 import android.view.*
-import org.tensorflow.lite.examples.classification.CustomAdapter
-import org.tensorflow.lite.examples.classification.CustomData
-import androidx.recyclerview.widget.GridLayoutManager
-import org.tensorflow.lite.examples.classification.CustomActivity
-import org.tensorflow.lite.examples.classification.SpacesItemDecoration
-import android.widget.TextView
-import org.tensorflow.lite.examples.classification.MyJson
-import com.bumptech.glide.Glide
-import org.json.JSONObject
-import org.json.JSONException
-import org.tensorflow.lite.examples.classification.ItemData
-import org.json.JSONArray
-import org.tensorflow.lite.examples.classification.FavoritesAdapter
-import org.tensorflow.lite.examples.classification.DetailActivity
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import org.tensorflow.lite.examples.classification.env.Logger
 import java.lang.IllegalStateException
 import java.lang.NullPointerException
@@ -166,10 +123,10 @@ class CameraConnectionFragment @SuppressLint("ValidFragment") private constructo
         }
 
         fun newInstance(
-                callback: ConnectionCallback,
-                imageListener: OnImageAvailableListener,
-                layout: Int,
-                inputSize: Size): CameraConnectionFragment {
+            callback: ConnectionCallback,
+            imageListener: OnImageAvailableListener,
+            layout: Int,
+            inputSize: Size): CameraConnectionFragment {
             return CameraConnectionFragment(callback, imageListener, layout, inputSize)
         }
 
@@ -496,8 +453,8 @@ class CameraConnectionFragment @SuppressLint("ValidFragment") private constructo
         }
         val rotation = activity.windowManager.defaultDisplay.rotation
         val matrix = Matrix()
-        val viewRect = RectF(0, 0, viewWidth.toFloat(), viewHeight.toFloat())
-        val bufferRect = RectF(0, 0, previewSize!!.height.toFloat(), previewSize!!.width.toFloat())
+        val viewRect = RectF(0F, 0F, viewWidth.toFloat(), viewHeight.toFloat())
+        val bufferRect = RectF(0F, 0F, previewSize!!.height.toFloat(), previewSize!!.width.toFloat())
         val centerX = viewRect.centerX()
         val centerY = viewRect.centerY()
         if (Surface.ROTATION_90 == rotation || Surface.ROTATION_270 == rotation) {
@@ -523,11 +480,11 @@ class CameraConnectionFragment @SuppressLint("ValidFragment") private constructo
     }
 
     /** Compares two `Size`s based on their areas.  */
-    internal class CompareSizesByArea : Comparator<Size> {
-        override fun compare(lhs: Size, rhs: Size): Int {
+    internal class CompareSizesByArea : Comparator<Size?> {
+        override fun compare(lhs: Size?, rhs: Size?): Int {
             // We cast here to ensure the multiplications won't overflow
             return java.lang.Long.signum(
-                    lhs.width.toLong() * lhs.height - rhs.width.toLong() * rhs.height)
+                    lhs!!.width.toLong() * lhs.height - rhs!!.width.toLong() * rhs.height)
         }
     }
 

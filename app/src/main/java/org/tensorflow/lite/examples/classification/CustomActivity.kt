@@ -21,7 +21,7 @@ class CustomActivity : AppCompatActivity(), CustomAdapter.OnListItemSelectedInte
         setContentView(R.layout.activity_custom)
 
         mContext = this
-        recyclerView = findViewById<RecyclerView>(R.id.rv_custom)
+        recyclerView = findViewById(R.id.rv_custom)
         val btn_next: Button = findViewById(R.id.btn_next)
 
         val arrayList = ArrayList<CustomData>()

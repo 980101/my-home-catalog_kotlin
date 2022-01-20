@@ -77,10 +77,11 @@ import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import java.util.ArrayList
 
 class FavoritesActivity : AppCompatActivity(), FavoritesAdapter.OnListItemSelectedInterface {
-    private var recyclerView: RecyclerView? = null
+    lateinit var recyclerView: RecyclerView
     private var adapter: RecyclerView.Adapter<*>? = null
     private var arrayList: ArrayList<ItemData>? = null
     private var selected = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_favorites)
@@ -88,7 +89,6 @@ class FavoritesActivity : AppCompatActivity(), FavoritesAdapter.OnListItemSelect
         arrayList = ArrayList()
 
         // json 파일의 데이터 가져오기
-        val myJson = MyJson()
         val data = MyJson.getData(this)
         try {
             // 데이터의 형변환 (String -> jsonArray)
@@ -119,7 +119,6 @@ class FavoritesActivity : AppCompatActivity(), FavoritesAdapter.OnListItemSelect
 
     fun deleteItem(view: View?) {
         if (arrayList!!.size != 0 && selected > -1) {    // 아이템이 없는 경우, 예외처리
-            val myJson = MyJson()
             MyJson.deleteData(this, selected)
             arrayList!!.removeAt(selected)
             adapter!!.notifyItemRemoved(selected)

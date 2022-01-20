@@ -84,7 +84,7 @@ class CameraConnectionFragment @SuppressLint("ValidFragment") private constructo
          * @return The optimal `Size`, or an arbitrary one if none were big enough
          */
         @JvmStatic
-        fun chooseOptimalSize(choices: Array<Size>, width: Int, height: Int): Size? {
+        fun chooseOptimalSize(choices: Array<Size?>, width: Int, height: Int): Size? {
             val minSize = Math.max(Math.min(width, height), MINIMUM_PREVIEW_SIZE)
             val desiredSize = Size(width, height)
 
@@ -97,7 +97,7 @@ class CameraConnectionFragment @SuppressLint("ValidFragment") private constructo
                     // Set the size but don't return yet so that remaining sizes will still be logged.
                     exactSizeFound = true
                 }
-                if (option.height >= minSize && option.width >= minSize) {
+                if (option!!.height >= minSize && option.width >= minSize) {
                     bigEnough.add(option)
                 } else {
                     tooSmall.add(option)

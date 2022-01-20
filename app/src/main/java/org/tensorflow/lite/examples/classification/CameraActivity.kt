@@ -74,7 +74,7 @@ abstract class CameraActivity : AppCompatActivity(), OnImageAvailableListener, P
         private set(numThreads) {
             // Do nothing.
         }
-    private val mPreferences: SharedPreferences? = getSharedPreferences("file", MODE_PRIVATE);
+    val mPreferences: SharedPreferences? = getSharedPreferences("file", MODE_PRIVATE);
     private var adapter: HistoryAdapter? = null
     lateinit var recyclerView: RecyclerView
 //    private var recyclerView: RecyclerView? = null

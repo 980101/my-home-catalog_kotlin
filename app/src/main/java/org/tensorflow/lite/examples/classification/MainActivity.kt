@@ -1,27 +1,9 @@
 package org.tensorflow.lite.examples.classification
 
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment.Companion.chooseOptimalSize
-import org.tensorflow.lite.examples.classification.ItemData
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.TextView
-import org.tensorflow.lite.examples.classification.R
 import android.content.Intent
-import org.tensorflow.lite.examples.classification.DetailActivity
-import android.view.ViewGroup
-import android.view.LayoutInflater
-import com.bumptech.glide.Glide
-import android.util.SparseIntArray
-import org.tensorflow.lite.examples.classification.LegacyCameraConnectionFragment
-import android.hardware.Camera.PreviewCallback
-import org.tensorflow.lite.examples.classification.customview.AutoFitTextureView
-import android.view.TextureView.SurfaceTextureListener
-import android.graphics.SurfaceTexture
-import org.tensorflow.lite.examples.classification.CameraConnectionFragment
-import org.tensorflow.lite.examples.classification.env.ImageUtils
-import android.os.HandlerThread
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.hardware.Camera.CameraInfo
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -30,22 +12,13 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.DatabaseReference
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import org.tensorflow.lite.examples.classification.ItemAdapter
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import org.tensorflow.lite.examples.classification.CustomActivity
-import org.tensorflow.lite.examples.classification.InitialActivity
-import org.tensorflow.lite.examples.classification.FavoritesActivity
-import org.tensorflow.lite.examples.classification.MyJson
-import org.json.JSONArray
-import org.json.JSONObject
-import org.json.JSONException
-import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
-    private var recyclerView: RecyclerView? = null
+    lateinit var recyclerView: RecyclerView
     private var adapter: RecyclerView.Adapter<*>? = null
     private var dataList: ArrayList<ItemData?>? = null
     private var database: FirebaseDatabase? = null
@@ -53,47 +26,38 @@ class MainActivity : AppCompatActivity() {
     private var styleData: DatabaseReference? = null
     private var selectedStyle: View? = null
     private var selectedType: View? = null
-    private var type_all: LinearLayout? = null
-    private var type_chair: LinearLayout? = null
-    private var type_bed: LinearLayout? = null
-    private var type_sofa: LinearLayout? = null
-    private var type_dresser: LinearLayout? = null
-    private var type_table: LinearLayout? = null
+
     private var tv_title: TextView? = null
     private var prevBtn: Button? = null
-    private var presBtn: Button? = null
     private var btn_custom: Button? = null
     private var btn_initial: Button? = null
     private var btn_favorites: Button? = null
-    private var btn_style_all: Button? = null
-    private var btn_style_natural: Button? = null
-    private var btn_style_modern: Button? = null
-    private var btn_style_classic: Button? = null
-    private var btn_style_industrial: Button? = null
-    private var btn_style_zen: Button? = null
     private var pickedStyle: String? = null
     private var pickedType: String? = null
     private val styles = arrayOf("natural", "modern", "classic", "industrial", "zen") // 스타일
     private val types = arrayOf("bed", "chair", "dresser", "sofa", "table") // 가구
     private var styleList: ArrayList<String?>? = null
     private var typeList: ArrayList<String?>? = null
+    lateinit var type_all:LinearLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tv_title = findViewById(R.id.tv_title)
         recyclerView = findViewById(R.id.list_furniture)
+
         type_all = findViewById(R.id.type_all)
-        type_chair = findViewById(R.id.type_chair)
-        type_bed = findViewById(R.id.type_bed)
-        type_sofa = findViewById(R.id.type_sofa)
-        type_dresser = findViewById(R.id.type_dresser)
-        type_table = findViewById(R.id.type_table)
-        btn_style_all = findViewById(R.id.btn_style_all)
-        btn_style_natural = findViewById(R.id.btn_style_natural)
-        btn_style_modern = findViewById(R.id.btn_style_modern)
-        btn_style_classic = findViewById(R.id.btn_style_classic)
-        btn_style_industrial = findViewById(R.id.btn_style_industrial)
-        btn_style_zen = findViewById(R.id.btn_style_zen)
+        val type_chair:LinearLayout = findViewById(R.id.type_chair)
+        val type_bed:LinearLayout = findViewById(R.id.type_bed)
+        val type_sofa:LinearLayout = findViewById(R.id.type_sofa)
+        val type_dresser:LinearLayout = findViewById(R.id.type_dresser)
+        val type_table:LinearLayout = findViewById(R.id.type_table)
+        val btn_style_all:Button = findViewById(R.id.btn_style_all)
+        val btn_style_natural:Button = findViewById(R.id.btn_style_natural)
+        val btn_style_modern:Button = findViewById(R.id.btn_style_modern)
+        val btn_style_classic:Button = findViewById(R.id.btn_style_classic)
+        val btn_style_industrial:Button = findViewById(R.id.btn_style_industrial)
+        val btn_style_zen:Button = findViewById(R.id.btn_style_zen)
 
         // 버튼 설정
         btn_custom = findViewById(R.id.btn_bottom_custom)
@@ -157,7 +121,7 @@ class MainActivity : AppCompatActivity() {
                 selectedStyle = btn_style_zen
             }
         }
-        presBtn = findViewById(selectedStyle!!.id)
+        val presBtn:Button = findViewById(selectedStyle!!.id)
         presBtn.setTextColor(resources.getColor(R.color.white))
         when (pickedType) {
             "all" -> {
@@ -195,12 +159,13 @@ class MainActivity : AppCompatActivity() {
         if (selectedStyle !== v) {
             // 이전 버튼 설정
             selectedStyle!!.background = getDrawable(R.drawable.btn_style_unclicked) // 배경색상
-            prevBtn = findViewById(selectedStyle!!.id) // 버튼 텍스트 색상
+            val prevBtn:Button = findViewById(selectedStyle!!.id) // 버튼 텍스트 색상
             prevBtn.setTextColor(resources.getColor(R.color.gray_dark))
         }
         selectedStyle = v
         v.background = getDrawable(R.drawable.btn_style_clicked)
-        presBtn = findViewById(selectedStyle!!.id)
+
+        val presBtn:Button = findViewById(selectedStyle!!.id)
         presBtn.setTextColor(resources.getColor(R.color.white))
 
         // 모든 타입

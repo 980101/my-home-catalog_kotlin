@@ -22,11 +22,11 @@ class InitialActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        var intent: Intent? = null
+        lateinit var intent: Intent
         when (v.id) {
-            R.id.btn_favorites -> Intent(applicationContext, FavoritesActivity::class.java)
-            R.id.btn_start -> Intent(applicationContext, MainActivity::class.java)
-            R.id.btn_custom -> Intent(applicationContext, CustomActivity::class.java)
+            R.id.btn_favorites -> intent = Intent(applicationContext, FavoritesActivity::class.java)
+            R.id.btn_start -> intent = Intent(applicationContext, MainActivity::class.java)
+            R.id.btn_custom -> intent = Intent(applicationContext, CustomActivity::class.java)
         }
         startActivity(intent)
     }

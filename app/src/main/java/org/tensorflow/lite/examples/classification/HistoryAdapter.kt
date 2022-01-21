@@ -13,6 +13,7 @@ class HistoryAdapter internal constructor(private val arrayList: ArrayList<Strin
     inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var tv_history: TextView
         var btn_delete: Button
+
         override fun onClick(v: View) {
             val pos = absoluteAdapterPosition
             val style = tv_history.text.toString()
@@ -21,7 +22,6 @@ class HistoryAdapter internal constructor(private val arrayList: ArrayList<Strin
                 R.id.btn_item_history -> removeAt(pos, style)
             }
         }
-
         init {
             tv_history = itemView.findViewById(R.id.tv_item_history)
             btn_delete = itemView.findViewById(R.id.btn_item_history)
@@ -46,9 +46,10 @@ class HistoryAdapter internal constructor(private val arrayList: ArrayList<Strin
         arrayList!!.removeAt(position)
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, arrayList.size)
+
         // 데이터 삭제 : Data 부분
         val mPreferences = (CameraActivity.Companion.mContext as CameraActivity).mPreferences
-        val editor = mPreferences!!.edit()
+        val editor = mPreferences.edit()
         editor.remove(style)
         editor.commit()
     }

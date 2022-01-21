@@ -62,24 +62,18 @@ abstract class CameraActivity : AppCompatActivity(), OnImageAvailableListener, P
         private set
     private var postInferenceCallback: Runnable? = null
     private var imageConverter: Runnable? = null
-
-    // Do nothing.
+    
     protected var device = Classifier.Device.CPU
         private set(device) {
-            // Do nothing.
+            field = device
         }
-
-    // Do nothing.
     protected var numThreads = -1
         private set(numThreads) {
-            // Do nothing.
+            field = numThreads
         }
-    val mPreferences: SharedPreferences? = getSharedPreferences("file", MODE_PRIVATE);
+
+    lateinit var mPreferences: SharedPreferences
     private var adapter: HistoryAdapter? = null
-    lateinit var recyclerView: RecyclerView
-//    private var recyclerView: RecyclerView? = null
-    private var arrayList: ArrayList<String?>? = null
-    private var btn_capture: Button? = null
     private var recognitionStyle: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,22 +88,21 @@ abstract class CameraActivity : AppCompatActivity(), OnImageAvailableListener, P
             requestPermission()
         }
 
-        recyclerView = findViewById(R.id.rv_history)
-        btn_capture = findViewById(R.id.btn_capture)
-        btn_capture!!.setOnClickListener(onClickListener)
+        val recyclerView:RecyclerView = findViewById(R.id.rv_history)
+        val btn_capture:Button = findViewById(R.id.btn_capture)
+        btn_capture.setOnClickListener(onClickListener)
 
         mContext = this
+        mPreferences = getSharedPreferences("file", MODE_PRIVATE)
 
-        // SharedPreferences 객체 생성
-        arrayList = ArrayList()
-//        mPreferences = getSharedPreferences("file", MODE_PRIVATE)
-
-        val allValue = mPreferences?.getAll()
+        val arrayList: ArrayList<String?> = ArrayList()
+        val allValue = mPreferences.getAll()
         if (allValue != null) {
             for ((key) in allValue) {
-                arrayList!!.add(mPreferences?.getString(key, "no value"))
+                arrayList.add(mPreferences.getString(key, "no value"))
             }
         }
+
         recyclerView.setLayoutManager(LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false))
         val spacingInPixels = resources.getDimensionPixelSize(R.dimen.spacing_small)
         recyclerView.addItemDecoration(HistoryItemDecoration(spacingInPixels))
@@ -135,8 +128,8 @@ abstract class CameraActivity : AppCompatActivity(), OnImageAvailableListener, P
     }
 
     fun saveStyle() {
-        val editor = mPreferences!!.edit()
-        if (mPreferences!!.contains(recognitionStyle)) {  // 저장된 값이 있으면 삭제
+        val editor = mPreferences.edit()
+        if (mPreferences.contains(recognitionStyle)) {  // 저장된 값이 있으면 삭제
             editor.remove(recognitionStyle)
             editor.commit()
         }
